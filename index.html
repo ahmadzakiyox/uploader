@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple File Uploader</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 500px; }
+        h1 { margin-bottom: 1.5rem; }
+        input[type="file"] { border: 2px dashed #ccc; padding: 2rem; border-radius: 5px; cursor: pointer; display: block; width: 100%; box-sizing: border-box; }
+        button { background-color: #007bff; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 5px; font-size: 1rem; cursor: pointer; margin-top: 1rem; }
+        #result { margin-top: 1.5rem; padding: 1rem; background: #e9ecef; border-radius: 5px; word-wrap: break-word; display: none; }
+        #result a { color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Upload File Anda 📁</h1>
+    <form id="uploadForm">
+        <input type="file" id="fileInput" name="fileSaya" required>
+        <button type="submit">Upload</button>
+    </form>
+    <div id="result"></div>
+</div>
+
+<script>
+    const form = document.getElementById('uploadForm');
+    const fileInput = document.getElementById('fileInput');
+    const resultDiv = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Mencegah form reload halaman
+
+        const formData = new FormData();
+        formData.append('fileSaya', fileInput.files[0]);
+
+        resultDiv.style.display = 'block';
+        resultDiv.textContent = 'Mengupload...';
+
+        try {
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                resultDiv.innerHTML = `Berhasil! Link Anda: <br><a href="${data.url}" target="_blank">${data.url}</a>`;
+            } else {
+                resultDiv.textContent = `Error: ${data.error}`;
+            }
+
+        } catch (error) {
+            resultDiv.textContent = 'Gagal terhubung ke server.';
+        }
+    });
+</script>
+
+</body>
+</html>
